@@ -34,6 +34,7 @@ module API
         optional :pages_access_level, type: String, values: %w(disabled private enabled public), desc: 'Pages access level. One of `disabled`, `private`, `enabled` or `public`'
         optional :operations_access_level, type: String, values: %w(disabled private enabled), desc: 'Operations access level. One of `disabled`, `private` or `enabled`'
         optional :analytics_access_level, type: String, values: %w(disabled private enabled), desc: 'Analytics access level. One of `disabled`, `private` or `enabled`'
+        optional :container_registry_access_level, type: String, values: %w(disabled private enabled), desc: 'Container registry access level. Controls visibility of the container registry. One of `disabled`, `private` or `enabled`'
 
         optional :emails_disabled, type: Boolean, desc: 'Disable email notifications'
         optional :show_default_award_emojis, type: Boolean, desc: 'Show default award emojis'
@@ -121,7 +122,7 @@ module API
           :ci_config_path,
           :ci_default_git_depth,
           :ci_forward_deployment_enabled,
-          :container_registry_enabled,
+          :container_registry_access_level,
           :container_expiration_policy_attributes,
           :default_branch,
           :description,
@@ -160,7 +161,8 @@ module API
           :jobs_enabled,
           :merge_requests_enabled,
           :wiki_enabled,
-          :snippets_enabled
+          :snippets_enabled,
+          :container_registry_enabled
         ]
       end
 
