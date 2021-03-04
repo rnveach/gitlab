@@ -1,0 +1,5 @@
+---
+title: Add the ability to use != approved-by in merge request filter
+merge_request: 55025
+author:
+type: other
