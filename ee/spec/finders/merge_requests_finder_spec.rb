@@ -30,5 +30,23 @@ RSpec.describe MergeRequestsFinder do
         expect(merge_requests).to contain_exactly(merged_merge_request)
       end
     end
+
+    context 'filtering by approver' do
+      let(:params) { { approver_ids: [user2.id], approver_usernames: [user2.username] } }
+
+      it 'calls the finder method' do
+        expect(::MergeRequests::ByApproversFinder).to receive(:new).with([user2.username], [user2.id]).and_call_original
+        described_class.new(user, params).execute
+      end
+
+      context 'not filter' do
+        let(:params) { { not: { approver_ids: [user2.id], approver_usernames: [user2.username] } } }
+
+        it 'calls the finder method' do
+          expect(::MergeRequests::ByApproversFinder).to receive(:new).with([user2.username], [user2.id], negated: true).and_call_original
+          described_class.new(user, params).execute
+        end
+      end
+    end
   end
 end

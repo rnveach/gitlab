@@ -20,6 +20,8 @@ RSpec.describe MergeRequests::ByApproversFinder do
   let(:second_user) { create(:user) }
   let(:second_project_user) { create(:user) }
 
+  let(:negated) { false }
+
   let!(:merge_request_with_project_approver) do
     rule = create(:approval_project_rule, users: [project_user, second_project_user])
     create(:merge_request, source_project: create(:project, approval_rules: [rule]))
@@ -39,7 +41,7 @@ RSpec.describe MergeRequests::ByApproversFinder do
   end
 
   def merge_requests(ids: nil, names: [])
-    described_class.new(names, ids).execute(MergeRequest.all)
+    described_class.new(names, ids, negated: negated).execute(MergeRequest.all)
   end
 
   context 'filter by no approvers' do
@@ -72,6 +74,19 @@ RSpec.describe MergeRequests::ByApproversFinder do
       expect(merge_requests(names: [second_user.username])).to eq(
         [merge_request_with_two_approvers]
       )
+    end
+
+    context 'when negated is true' do
+      let(:negated) { true }
+
+      it 'returns the merge requests without the second approver' do
+        expect(merge_requests(ids: [second_user.id])).to eq(
+          [merge_request_with_two_approvers]
+        )
+        expect(merge_requests(names: [second_user.username])).to eq(
+          [merge_request_with_two_approvers]
+        )
+      end
     end
   end
 

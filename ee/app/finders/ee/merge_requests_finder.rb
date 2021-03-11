@@ -14,10 +14,24 @@ module EE
       items
     end
 
+    override :filter_negated_items
+    def filter_negated_items(items)
+      items = super(items)
+      by_negated_approvers(items)
+    end
+
     # Filter by merge requests approval list that contains specified user directly or as part of group membership
     def by_approvers(items)
+      return items unless params[:approver_usernames] || params[:approver_ids]
+
       ::MergeRequests::ByApproversFinder
         .new(params[:approver_usernames], params[:approver_ids])
+        .execute(items)
+    end
+
+    def by_negated_approvers(items)
+      ::MergeRequests::ByApproversFinder
+        .new(not_params[:approver_usernames], not_params[:approver_ids], negated: true)
         .execute(items)
     end
 
