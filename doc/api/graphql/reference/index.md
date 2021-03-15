@@ -12015,6 +12015,7 @@ Represents summary of a security report.
 | <a id="securityreportsummarycoveragefuzzing"></a>`coverageFuzzing` | [`SecurityReportSummarySection`](#securityreportsummarysection) | Aggregated counts for the `coverage_fuzzing` scan. |
 | <a id="securityreportsummarydast"></a>`dast` | [`SecurityReportSummarySection`](#securityreportsummarysection) | Aggregated counts for the `dast` scan. |
 | <a id="securityreportsummarydependencyscanning"></a>`dependencyScanning` | [`SecurityReportSummarySection`](#securityreportsummarysection) | Aggregated counts for the `dependency_scanning` scan. |
+| <a id="securityreportsummarymanual"></a>`manual` | [`SecurityReportSummarySection`](#securityreportsummarysection) | Aggregated counts for the `manual` scan. |
 | <a id="securityreportsummarysast"></a>`sast` | [`SecurityReportSummarySection`](#securityreportsummarysection) | Aggregated counts for the `sast` scan. |
 | <a id="securityreportsummarysecretdetection"></a>`secretDetection` | [`SecurityReportSummarySection`](#securityreportsummarysection) | Aggregated counts for the `secret_detection` scan. |
 
@@ -12881,7 +12882,7 @@ Represents a vulnerability.
 | <a id="vulnerabilitynotes"></a>`notes` | [`NoteConnection!`](#noteconnection) | All notes on this noteable. (see [Connections](#connections)) |
 | <a id="vulnerabilityprimaryidentifier"></a>`primaryIdentifier` | [`VulnerabilityIdentifier`](#vulnerabilityidentifier) | Primary identifier of the vulnerability. |
 | <a id="vulnerabilityproject"></a>`project` | [`Project`](#project) | The project on which the vulnerability was found. |
-| <a id="vulnerabilityreporttype"></a>`reportType` | [`VulnerabilityReportType`](#vulnerabilityreporttype) | Type of the security report that found the vulnerability (SAST, DEPENDENCY_SCANNING, CONTAINER_SCANNING, DAST, SECRET_DETECTION, COVERAGE_FUZZING, API_FUZZING). `Scan Type` in the UI. |
+| <a id="vulnerabilityreporttype"></a>`reportType` | [`VulnerabilityReportType`](#vulnerabilityreporttype) | Type of the security report that found the vulnerability (SAST, DEPENDENCY_SCANNING, CONTAINER_SCANNING, DAST, SECRET_DETECTION, COVERAGE_FUZZING, API_FUZZING, MANUAL). `Scan Type` in the UI. |
 | <a id="vulnerabilityresolvedat"></a>`resolvedAt` | [`Time`](#time) | Timestamp of when the vulnerability state was changed to resolved. |
 | <a id="vulnerabilityresolvedby"></a>`resolvedBy` | [`UserCore`](#usercore) | The user that resolved the vulnerability. |
 | <a id="vulnerabilityresolvedondefaultbranch"></a>`resolvedOnDefaultBranch` | [`Boolean!`](#boolean) | Indicates whether the vulnerability is fixed on the default branch or not. |
@@ -14506,6 +14507,7 @@ The type of the security scan that found the vulnerability.
 | <a id="vulnerabilityreporttypecoverage_fuzzing"></a>`COVERAGE_FUZZING` |  |
 | <a id="vulnerabilityreporttypedast"></a>`DAST` |  |
 | <a id="vulnerabilityreporttypedependency_scanning"></a>`DEPENDENCY_SCANNING` |  |
+| <a id="vulnerabilityreporttypemanual"></a>`MANUAL` |  |
 | <a id="vulnerabilityreporttypesast"></a>`SAST` |  |
 | <a id="vulnerabilityreporttypesecret_detection"></a>`SECRET_DETECTION` |  |
 
