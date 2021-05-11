@@ -51,7 +51,7 @@ module Mutations
 
       argument :message, GraphQL::STRING_TYPE,
         required: false,
-        description: '???.'
+        description: 'Additional information about the vulnerability.'
 
       argument :detected_at, Types::TimeType,
         required: false,
@@ -59,11 +59,11 @@ module Mutations
 
       argument :confirmed_at, Types::TimeType,
         required: false,
-        description: 'Timestamp of when the vulnerability state was changed to confirmed (defaults to creation time if status is not `detected`).'
+        description: 'Timestamp of when the vulnerability state was changed to confirmed (defaults to creation time if status is `confirmed`).'
 
       argument :resolved_at, Types::TimeType,
         required: false,
-        description: 'Timestamp of when the vulnerability state was changed to resolved (defaults to creation time if status is not `detected`).'
+        description: 'Timestamp of when the vulnerability state was changed to resolved (defaults to creation time if status is `resolved`).'
     end
 
     def resolve(**attributes)
