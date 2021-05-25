@@ -17,6 +17,7 @@ RSpec.describe AppSec::Dast::SiteProfiles::UpdateService do
   let_it_be(:new_request_headers) { "Authorization: Bearer #{SecureRandom.hex}" }
   let_it_be(:new_auth_url) { "#{new_target_url}/login" }
   let_it_be(:new_auth_password) { SecureRandom.hex }
+  let_it_be(:new_auth_username) { generate(:email) }
 
   let(:default_params) do
     {
@@ -29,7 +30,7 @@ RSpec.describe AppSec::Dast::SiteProfiles::UpdateService do
       auth_url: new_auth_url,
       auth_username_field: 'login[username]',
       auth_password_field: 'login[password]',
-      auth_username: generate(:email),
+      auth_username: new_auth_username,
       auth_password: new_auth_password
     }
   end
@@ -79,6 +80,97 @@ RSpec.describe AppSec::Dast::SiteProfiles::UpdateService do
 
       it 'returns a dast_site_profile payload' do
         expect(payload).to be_a(DastSiteProfile)
+      end
+
+      it 'audits the update' do
+        profile = payload.reload
+        audit_events = AuditEvent.all
+        audit_events_details = audit_events.map(&:details)
+
+        aggregate_failures do
+          expect(audit_events.count).to be(9)
+
+          audit_events.each do |event|
+            expect(event.author).to eq(user)
+            expect(event.entity).to eq(project)
+            expect(event.target_id).to eq(profile.id)
+            expect(event.target_type).to eq('DastSiteProfile')
+            expect(event.target_details).to eq(profile.name)
+          end
+
+          expect(audit_events_details).to include(
+            a_hash_including(
+              author_name: user.name,
+              custom_message: "Changed DAST site profile name from #{dast_profile.name} to #{new_profile_name}",
+              target_id: profile.id,
+              target_type: 'DastSiteProfile',
+              target_details: new_profile_name
+            )
+          )
+          expect(audit_events_details).to include(
+            a_hash_including(
+              author_name: user.name,
+              custom_message: "Changed DAST site profile target_url from #{dast_profile.dast_site.url} to #{new_target_url}",
+              target_id: profile.id,
+              target_type: 'DastSiteProfile',
+              target_details: new_profile_name
+            )
+          )
+          expect(audit_events_details).to include(
+            a_hash_including(
+              author_name: user.name,
+              custom_message: "Changed DAST site profile excluded_urls from #{dast_profile.excluded_urls.join(', ')} to #{new_excluded_urls.join(', ')}",
+            target_id: profile.id,
+            target_type: 'DastSiteProfile',
+            target_details: new_profile_name
+            )
+          )
+          expect(audit_events_details).to include(
+            a_hash_including(
+              author_name: user.name,
+              custom_message: "Changed DAST site profile auth_url from #{dast_profile.auth_url} to #{new_auth_url}",
+              target_id: profile.id,
+              target_type: 'DastSiteProfile',
+              target_details: new_profile_name
+            )
+          )
+          expect(audit_events_details).to include(
+            a_hash_including(
+              author_name: user.name,
+              custom_message: "Changed DAST site profile auth_username_field from #{dast_profile.auth_username_field} to login[username]",
+              target_id: profile.id,
+              target_type: 'DastSiteProfile',
+              target_details: new_profile_name
+            )
+          )
+          expect(audit_events_details).to include(
+            a_hash_including(
+              author_name: user.name,
+              custom_message: "Changed DAST site profile auth_password_field from #{dast_profile.auth_password_field} to login[password]",
+              target_id: profile.id,
+              target_type: 'DastSiteProfile',
+              target_details: new_profile_name
+            )
+          )
+          expect(audit_events_details).to include(
+            a_hash_including(
+              author_name: user.name,
+              custom_message: "Changed DAST site profile auth_username from #{dast_profile.auth_username} to #{new_auth_username}",
+              target_id: profile.id,
+              target_type: 'DastSiteProfile',
+              target_details: new_profile_name
+            )
+          )
+          expect(audit_events_details).to include(
+            a_hash_including(
+              author_name: user.name,
+              custom_message: "Changed DAST site profile auth_password (secret value omitted)",
+              target_id: profile.id,
+              target_type: 'DastSiteProfile',
+              target_details: new_profile_name
+            )
+          )
+        end
       end
 
       context 'when the target url is localhost' do
