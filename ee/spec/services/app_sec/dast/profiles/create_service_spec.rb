@@ -12,7 +12,7 @@ RSpec.describe AppSec::Dast::Profiles::CreateService do
     {
       name: SecureRandom.hex,
       description: :description,
-      branch_name: 'orphaned-branch',
+      branch_name: project.default_branch,
       dast_site_profile: dast_site_profile,
       dast_scanner_profile: dast_scanner_profile,
       run_after_create: false
@@ -46,6 +46,27 @@ RSpec.describe AppSec::Dast::Profiles::CreateService do
 
       it 'creates a dast_profile' do
         expect { subject }.to change { Dast::Profile.count }.by(1)
+      end
+
+      it 'audits the creation' do
+        profile = subject.payload[:dast_profile]
+
+        audit_event = AuditEvent.last
+
+        aggregate_failures do
+          expect(audit_event.author).to eq(developer)
+          expect(audit_event.entity).to eq(project)
+          expect(audit_event.target_id).to eq(profile.id)
+          expect(audit_event.target_type).to eq('Dast::Profile')
+          expect(audit_event.target_details).to eq(profile.name)
+          expect(audit_event.details).to eq({
+            author_name: developer.name,
+            custom_message: 'Added DAST profile',
+            target_id: profile.id,
+            target_type: 'Dast::Profile',
+            target_details: profile.name
+          })
+        end
       end
 
       context 'when param run_after_create: true' do
