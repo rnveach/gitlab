@@ -103,7 +103,11 @@ module AppSec
           params.each do |property, new_value|
             old_value = old_params[property]
 
-            next if old_value == new_value
+            if new_value.is_a?(Array)
+              next if old_value.sort == new_value.sort
+            else
+              next if old_value == new_value
+            end
 
             ::Gitlab::Audit::Auditor.audit(
               name: 'dast_site_profile_update',
@@ -120,14 +124,10 @@ module AppSec
           when :auth_password || :request_headers
             "Changed DAST site profile #{property} (secret value omitted)"
           when :excluded_urls
-            "Changed DAST site profile #{property} from #{urls_to_s(old_value)} to #{urls_to_s(new_value)}"
+            "Changed DAST site profile #{property} (long value omitted)"
           else
             "Changed DAST site profile #{property} from #{old_value} to #{new_value}"
           end
-        end
-
-        def urls_to_s(urls)
-          [urls].flatten.join(', ')
         end
       end
     end

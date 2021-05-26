@@ -119,7 +119,7 @@ RSpec.describe AppSec::Dast::SiteProfiles::UpdateService do
           expect(audit_events_details).to include(
             a_hash_including(
               author_name: user.name,
-              custom_message: "Changed DAST site profile excluded_urls from #{dast_profile.excluded_urls.join(', ')} to #{new_excluded_urls.join(', ')}",
+              custom_message: 'Changed DAST site profile excluded_urls (long value omitted)',
             target_id: profile.id,
             target_type: 'DastSiteProfile',
             target_details: new_profile_name
