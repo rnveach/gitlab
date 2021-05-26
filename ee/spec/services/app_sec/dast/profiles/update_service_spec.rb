@@ -76,6 +76,66 @@ RSpec.describe AppSec::Dast::Profiles::UpdateService do
           end
         end
 
+        it 'audits the update', :aggregate_failures do
+          old_profile_attrs = {
+            description: dast_profile.description,
+            name: dast_profile.name,
+            scanner_profile_name: dast_profile.dast_scanner_profile.name,
+            site_profile_name: dast_profile.dast_site_profile.name
+          }
+
+          subject
+
+          new_profile = dast_profile.reload
+          audit_events = AuditEvent.all
+          audit_events_details = audit_events.map(&:details)
+
+          audit_events.each do |event|
+            expect(event.author).to eq(user)
+            expect(event.entity).to eq(project)
+            expect(event.target_id).to eq(new_profile.id)
+            expect(event.target_type).to eq('Dast::Profile')
+            expect(event.target_details).to eq(new_profile.name)
+          end
+
+          expect(audit_events_details).to include(
+            a_hash_including(
+              author_name: user.name,
+              custom_message: "Changed DAST profile dast_scanner_profile from #{old_profile_attrs[:scanner_profile_name]} to #{dast_scanner_profile.name}",
+              target_id: new_profile.id,
+              target_type: 'Dast::Profile',
+              target_details: new_profile.name
+            )
+          )
+          expect(audit_events_details).to include(
+            a_hash_including(
+              author_name: user.name,
+              custom_message: "Changed DAST profile dast_site_profile from #{old_profile_attrs[:site_profile_name]} to #{dast_site_profile.name}",
+              target_id: new_profile.id,
+              target_type: 'Dast::Profile',
+              target_details: new_profile.name
+            )
+          )
+          expect(audit_events_details).to include(
+            a_hash_including(
+              author_name: user.name,
+              custom_message: "Changed DAST profile name from #{old_profile_attrs[:name]} to #{new_profile.name}",
+              target_id: new_profile.id,
+              target_type: 'Dast::Profile',
+              target_details: new_profile.name
+            )
+          )
+          expect(audit_events_details).to include(
+            a_hash_including(
+              author_name: user.name,
+              custom_message: "Changed DAST profile description from #{old_profile_attrs[:description]} to #{new_profile.description}",
+              target_id: new_profile.id,
+              target_type: 'Dast::Profile',
+              target_details: new_profile.name
+            )
+          )
+        end
+
         context 'when param run_after_update: true' do
           let(:params) { default_params.merge(run_after_update: true) }
 

@@ -9,7 +9,12 @@ module AppSec
         def execute
           return unauthorized unless allowed?
           return error('Profile parameter missing') unless dast_profile
+
+          old_params = dast_profile.attributes.symbolize_keys
+
           return error(dast_profile.errors.full_messages) unless dast_profile.update(dast_profile_params)
+
+          create_audit_events(old_params)
 
           return success(dast_profile: dast_profile, pipeline_url: nil) unless params[:run_after_update]
 
@@ -53,6 +58,37 @@ module AppSec
             current_user: current_user,
             params: { dast_profile: dast_profile }
           ).execute
+        end
+
+        def create_audit_events(old_params)
+          dast_profile_params.each do |property, new_value|
+            old_value = old_params[property]
+
+            next if old_value == new_value
+
+            ::Gitlab::Audit::Auditor.audit(
+              name: 'dast_profile_update',
+              author: current_user,
+              scope: container,
+              target: dast_profile,
+              message: audit_message(property, new_value, old_value)
+            )
+          end
+        end
+
+        def audit_message(property, new_value, old_value)
+          case property
+          when :dast_scanner_profile_id
+            new_value = DastScannerProfile.find(new_value).name
+            old_value = DastScannerProfile.find(old_value).name
+            property = :dast_scanner_profile
+          when :dast_site_profile_id
+            new_value = DastSiteProfile.find(new_value).name
+            old_value = DastSiteProfile.find(old_value).name
+            property = :dast_site_profile
+          end
+
+          "Changed DAST profile #{property} from #{old_value} to #{new_value}"
         end
       end
     end
