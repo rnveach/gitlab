@@ -22,10 +22,13 @@ module AppSec
           return ServiceResponse.error(message: _('Cannot modify %{profile_name} referenced in security policy') % { profile_name: dast_site_profile.name }) if referenced_in_security_policy?
 
           ActiveRecord::Base.transaction do
-            params_for_audit = params.dup
-            old_params = dast_site_profile.attributes.symbolize_keys.merge(
-              target_url: dast_site_profile.dast_site.url
-            )
+            auditor = Audit::UpdateService.new(project, current_user, {
+              dast_site_profile: dast_site_profile,
+              new_params: params.dup,
+              old_params: dast_site_profile.attributes.symbolize_keys.merge(
+                target_url: dast_site_profile.dast_site.url
+              )
+            })
 
             if target_url = params.delete(:target_url)
               params[:dast_site] = DastSites::FindOrCreateService.new(project, current_user).execute!(url: target_url)
@@ -36,7 +39,7 @@ module AppSec
 
             params.compact!
             dast_site_profile.update!(params)
-            create_audit_events(params_for_audit, old_params)
+            auditor.execute
 
             ServiceResponse.success(payload: dast_site_profile)
           end
@@ -98,37 +101,6 @@ module AppSec
           response
         end
         # rubocop: enable CodeReuse/ActiveRecord
-
-        def create_audit_events(params, old_params)
-          params.each do |property, new_value|
-            old_value = old_params[property]
-
-            if new_value.is_a?(Array)
-              next if old_value.sort == new_value.sort
-            else
-              next if old_value == new_value
-            end
-
-            ::Gitlab::Audit::Auditor.audit(
-              name: 'dast_site_profile_update',
-              author: current_user,
-              scope: project,
-              target: dast_site_profile,
-              message: audit_message(property, new_value, old_value)
-            )
-          end
-        end
-
-        def audit_message(property, new_value, old_value)
-          case property
-          when :auth_password || :request_headers
-            "Changed DAST site profile #{property} (secret value omitted)"
-          when :excluded_urls
-            "Changed DAST site profile #{property} (long value omitted)"
-          else
-            "Changed DAST site profile #{property} from #{old_value} to #{new_value}"
-          end
-        end
       end
     end
   end
