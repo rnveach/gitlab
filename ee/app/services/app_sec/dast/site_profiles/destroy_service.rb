@@ -46,7 +46,7 @@ module AppSec
             author: current_user,
             scope: project,
             target: profile,
-            message: "Removed DAST site profile"
+            message: 'Removed DAST site profile'
           )
         end
       end

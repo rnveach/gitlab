@@ -77,7 +77,7 @@ module AppSec
             author: current_user,
             scope: project,
             target: dast_site_profile,
-            message: "Added DAST site profile"
+            message: 'Added DAST site profile'
           )
         end
       end
