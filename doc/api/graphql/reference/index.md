@@ -3250,7 +3250,7 @@ Input type: `PrometheusIntegrationResetTokenInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationprometheusintegrationresettokenclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationprometheusintegrationresettokenid"></a>`id` | [`PrometheusServiceID!`](#prometheusserviceid) | The ID of the integration to mutate. |
+| <a id="mutationprometheusintegrationresettokenid"></a>`id` | [`IntegrationsPrometheusID!`](#integrationsprometheusid) | The ID of the integration to mutate. |
 
 #### Fields
 
@@ -3271,7 +3271,7 @@ Input type: `PrometheusIntegrationUpdateInput`
 | <a id="mutationprometheusintegrationupdateactive"></a>`active` | [`Boolean`](#boolean) | Whether the integration is receiving alerts. |
 | <a id="mutationprometheusintegrationupdateapiurl"></a>`apiUrl` | [`String`](#string) | Endpoint at which Prometheus can be queried. |
 | <a id="mutationprometheusintegrationupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationprometheusintegrationupdateid"></a>`id` | [`PrometheusServiceID!`](#prometheusserviceid) | The ID of the integration to mutate. |
+| <a id="mutationprometheusintegrationupdateid"></a>`id` | [`IntegrationsPrometheusID!`](#integrationsprometheusid) | The ID of the integration to mutate. |
 
 #### Fields
 
@@ -15160,6 +15160,13 @@ An example `IncidentManagementOncallRotationID` is: `"gid://gitlab/IncidentManag
 
 Represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1.
 
+### `IntegrationsPrometheusID`
+
+A `IntegrationsPrometheusID` is a global ID. It is encoded as a string.
+
+An example `IntegrationsPrometheusID` is: `"gid://gitlab/Integrations::Prometheus/1"`.
+The older format `"gid://gitlab/PrometheusService/1"` was deprecated in 14.0.
+
 ### `IssuableID`
 
 A `IssuableID` is a global ID. It is encoded as a string.
@@ -15304,12 +15311,6 @@ String or integer.
 A `ProjectID` is a global ID. It is encoded as a string.
 
 An example `ProjectID` is: `"gid://gitlab/Project/1"`.
-
-### `PrometheusServiceID`
-
-A `PrometheusServiceID` is a global ID. It is encoded as a string.
-
-An example `PrometheusServiceID` is: `"gid://gitlab/PrometheusService/1"`.
 
 ### `ReleasesLinkID`
 
