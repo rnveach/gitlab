@@ -52,7 +52,7 @@ RSpec.describe API::Internal::UpcomingReconciliations, :api do
           put_upcoming_reconciliations
 
           expect(response).to have_gitlab_http_status(:bad_request)
-          expect(json_response.dig('error')).to eq("upcoming_reconciliations[0][namespace_id] is empty")
+          expect(json_response.dig('error')).to eq("upcoming_reconciliations[namespace_id] is empty")
         end
       end
 

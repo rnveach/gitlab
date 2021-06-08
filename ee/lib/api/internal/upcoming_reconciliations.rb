@@ -11,7 +11,7 @@ module API
         resource :upcoming_reconciliations do
           desc 'Update upcoming reconciliations'
           params do
-            requires :upcoming_reconciliations, type: Array, desc: 'An array of upcoming reconciliations' do
+            requires :upcoming_reconciliations, type: Array[JSON], desc: 'An array of upcoming reconciliations' do
               requires :namespace_id, type: Integer, allow_blank: false
               requires :next_reconciliation_date, type: Date
               requires :display_alert_from, type: Date
