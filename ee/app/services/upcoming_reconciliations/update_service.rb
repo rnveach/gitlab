@@ -4,26 +4,18 @@ module UpcomingReconciliations
   class UpdateService
     def initialize(upcoming_reconciliations)
       @upcoming_reconciliations = upcoming_reconciliations
+      @errors = []
     end
 
     def execute
-      errors = []
-      upcoming_reconciliations.each do |reconciliation|
-        next unless reconciliation[:namespace_id]
+      upcoming_reconciliations.each { |reconciliation| upsert_upcoming_reconciliation(reconciliation) }
 
-        upsert_return = upsert_upcoming_reconciliation(reconciliation)
-
-        errors << { reconciliation[:namespace_id] => upsert_return[:error] } unless upsert_return[:success]
-      end
-
-      errors.empty? ? ServiceResponse.success : ServiceResponse.error(message: errors.to_json)
-    rescue StandardError => e
-      ServiceResponse.error(message: e.message)
+      result
     end
 
     private
 
-    attr_reader :upcoming_reconciliations
+    attr_reader :upcoming_reconciliations, :errors
 
     def upsert_upcoming_reconciliation(reconciliation)
       existing_record = GitlabSubscriptions::UpcomingReconciliation.find_by_namespace_id(reconciliation[:namespace_id])
@@ -33,10 +25,12 @@ module UpcomingReconciliations
       else
         GitlabSubscriptions::UpcomingReconciliation.new(reconciliation).save!
       end
-
-      { success: true }
     rescue StandardError => e
-      { success: false, error: e.message }
+      errors << { reconciliation[:namespace_id] => e.message }
+    end
+
+    def result
+      errors.empty? ? ServiceResponse.success : ServiceResponse.error(message: errors.to_json)
     end
   end
 end

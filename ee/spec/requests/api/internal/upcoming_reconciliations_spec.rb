@@ -3,18 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe API::Internal::UpcomingReconciliations, :api do
-  let_it_be(:user) { create(:user) }
-  let_it_be(:admin) { create(:admin) }
-  let_it_be(:namespace) { create(:namespace) }
-
-  let(:upcoming_reconciliations) do
-    [{
-       namespace_id: namespace.id,
-       next_reconciliation_date: Date.today + 5.days,
-       display_alert_from: Date.today - 2.days
-    }]
-  end
-
   describe "PUT /internal/upcoming_reconciliations" do
     context "when unauthenticated" do
       it "returns authentication error" do
@@ -25,6 +13,8 @@ RSpec.describe API::Internal::UpcomingReconciliations, :api do
     end
 
     context "when authenticated as user" do
+      let_it_be(:user) { create(:user) }
+
       it "returns authentication error" do
         put api("/internal/upcoming_reconciliations", user)
 
@@ -33,6 +23,17 @@ RSpec.describe API::Internal::UpcomingReconciliations, :api do
     end
 
     context "when authenticated as admin" do
+      let_it_be(:admin) { create(:admin) }
+      let_it_be(:namespace) { create(:namespace) }
+
+      let(:upcoming_reconciliations) do
+        [{
+           namespace_id: namespace.id,
+           next_reconciliation_date: Date.today + 5.days,
+           display_alert_from: Date.today - 2.days
+         }]
+      end
+
       subject(:put_upcoming_reconciliations) do
         put api("/internal/upcoming_reconciliations", admin), params: { upcoming_reconciliations: upcoming_reconciliations }
       end

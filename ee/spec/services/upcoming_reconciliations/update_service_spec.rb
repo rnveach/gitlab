@@ -17,16 +17,16 @@ RSpec.describe UpcomingReconciliations::UpdateService do
   let(:record_to_update) do
     {
       namespace_id: existing_upcoming_reconciliation.namespace_id,
-      next_reconciliation_date: Date.today + 5.days,
-      display_alert_from: Date.today - 2.days
+      next_reconciliation_date: Date.today + 4.days,
+      display_alert_from: Date.today - 3.days
     }
   end
 
   let(:record_with_non_exist_namespace_id) do
     {
       namespace_id: non_existing_record_id,
-      next_reconciliation_date: Date.today + 6.days,
-      display_alert_from: Date.today - 1.day
+      next_reconciliation_date: Date.today + 4.days,
+      display_alert_from: Date.today - 3.days
     }
   end
 
