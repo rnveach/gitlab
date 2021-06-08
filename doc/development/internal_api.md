@@ -651,14 +651,14 @@ Example response:
 
 - CustomersDot
 
-## Upcoming Reconciliations
+## Upcoming reconciliations
 
-The upcoming_reconciliations endpoint is used by [CustomersDot](https://gitlab.com/gitlab-org/customers-gitlab-com) (`customers.gitlab.com`)
-in order to update upcoming reconciliations for namespaces.
+The `upcoming_reconciliations` endpoint is used by [CustomersDot](https://gitlab.com/gitlab-org/customers-gitlab-com) (`customers.gitlab.com`)
+to update upcoming reconciliations for namespaces.
 
-### Updating upcoming_reconciliations
+### Updating `upcoming_reconciliations`
 
-Use a PUT command to update upcoming_reconciliations.
+Use a PUT command to update `upcoming_reconciliations`.
 
 ```plaintext
 PUT /internal/upcoming_reconciliations
