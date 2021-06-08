@@ -33,8 +33,8 @@ RSpec.describe UpcomingReconciliations::UpdateService do
   describe '#execute' do
     subject(:service) { described_class.new(upcoming_reconciliations) }
 
-    shared_examples 'returns an error for the namespace' do |check_error_message: false|
-      it 'includes the error for the namespace' do
+    shared_examples 'returns an error for the namespace' do |check_error_message: true|
+      it 'includes the error for the namespace', :aggregate_failures do
         result = service.execute
 
         expect(result.status).to eq(:error)
@@ -149,9 +149,11 @@ RSpec.describe UpcomingReconciliations::UpdateService do
     end
 
     def expect_equal(upcoming_reconciliation, hash)
-      expect(upcoming_reconciliation.namespace_id).to eq(hash[:namespace_id])
-      expect(upcoming_reconciliation.next_reconciliation_date).to eq(hash[:next_reconciliation_date])
-      expect(upcoming_reconciliation.display_alert_from).to eq(hash[:display_alert_from])
+      aggregate_failures do
+        expect(upcoming_reconciliation.namespace_id).to eq(hash[:namespace_id])
+        expect(upcoming_reconciliation.next_reconciliation_date).to eq(hash[:next_reconciliation_date])
+        expect(upcoming_reconciliation.display_alert_from).to eq(hash[:display_alert_from])
+      end
     end
   end
 end

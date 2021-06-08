@@ -2,9 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Internal::UpcomingReconciliations do
-  include ApiHelpers
-
+RSpec.describe API::Internal::UpcomingReconciliations, :api do
   let_it_be(:user) { create(:user) }
   let_it_be(:admin) { create(:admin) }
   let_it_be(:namespace) { create(:namespace) }
@@ -21,6 +19,7 @@ RSpec.describe API::Internal::UpcomingReconciliations do
     context "when unauthenticated" do
       it "returns authentication error" do
         put api("/internal/upcoming_reconciliations")
+
         expect(response).to have_gitlab_http_status(:unauthorized)
       end
     end
@@ -28,6 +27,7 @@ RSpec.describe API::Internal::UpcomingReconciliations do
     context "when authenticated as user" do
       it "returns authentication error" do
         put api("/internal/upcoming_reconciliations", user)
+
         expect(response).to have_gitlab_http_status(:forbidden)
       end
     end
@@ -52,7 +52,7 @@ RSpec.describe API::Internal::UpcomingReconciliations do
           end
         end
 
-        it "returns error" do
+        it "returns error", :aggregate_failures do
           put_upcoming_reconciliations
 
           expect(response).to have_gitlab_http_status(:bad_request)
