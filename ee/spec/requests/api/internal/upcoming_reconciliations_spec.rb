@@ -26,9 +26,10 @@ RSpec.describe API::Internal::UpcomingReconciliations, :api do
       let_it_be(:admin) { create(:admin) }
       let_it_be(:namespace) { create(:namespace) }
 
+      let(:namespace_id) { namespace.id }
       let(:upcoming_reconciliations) do
         [{
-           namespace_id: namespace.id,
+           namespace_id: namespace_id,
            next_reconciliation_date: Date.today + 5.days,
            display_alert_from: Date.today - 2.days
          }]
@@ -42,6 +43,17 @@ RSpec.describe API::Internal::UpcomingReconciliations, :api do
         put_upcoming_reconciliations
 
         expect(response).to have_gitlab_http_status(:ok)
+      end
+
+      context "when namespace_id is empty" do
+        let(:namespace_id) { nil }
+
+        it 'returns error', :aggregate_failures do
+          put_upcoming_reconciliations
+
+          expect(response).to have_gitlab_http_status(:bad_request)
+          expect(json_response.dig('error')).to eq("upcoming_reconciliations[0][namespace_id] is empty")
+        end
       end
 
       context "when update service failed" do
