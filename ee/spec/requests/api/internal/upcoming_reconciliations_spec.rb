@@ -3,30 +3,30 @@
 require 'spec_helper'
 
 RSpec.describe API::Internal::UpcomingReconciliations, :api do
-  describe "PUT /internal/upcoming_reconciliations" do
+  describe 'PUT /internal/upcoming_reconciliations' do
     before do
       allow(::Gitlab).to receive(:com?).and_return(true)
     end
 
-    context "when unauthenticated" do
-      it "returns authentication error" do
-        put api("/internal/upcoming_reconciliations")
+    context 'when unauthenticated' do
+      it 'returns authentication error' do
+        put api('/internal/upcoming_reconciliations')
 
         expect(response).to have_gitlab_http_status(:unauthorized)
       end
     end
 
-    context "when authenticated as user" do
+    context 'when authenticated as user' do
       let_it_be(:user) { create(:user) }
 
-      it "returns authentication error" do
-        put api("/internal/upcoming_reconciliations", user)
+      it 'returns authentication error' do
+        put api('/internal/upcoming_reconciliations', user)
 
         expect(response).to have_gitlab_http_status(:forbidden)
       end
     end
 
-    context "when authenticated as admin" do
+    context 'when authenticated as admin' do
       let_it_be(:admin) { create(:admin) }
       let_it_be(:namespace) { create(:namespace) }
 
@@ -40,28 +40,28 @@ RSpec.describe API::Internal::UpcomingReconciliations, :api do
       end
 
       subject(:put_upcoming_reconciliations) do
-        put api("/internal/upcoming_reconciliations", admin), params: { upcoming_reconciliations: upcoming_reconciliations }
+        put api('/internal/upcoming_reconciliations', admin), params: { upcoming_reconciliations: upcoming_reconciliations }
       end
 
-      it "returns success" do
+      it 'returns success' do
         put_upcoming_reconciliations
 
         expect(response).to have_gitlab_http_status(:ok)
       end
 
-      context "when namespace_id is empty" do
+      context 'when namespace_id is empty' do
         let(:namespace_id) { nil }
 
         it 'returns error', :aggregate_failures do
           put_upcoming_reconciliations
 
           expect(response).to have_gitlab_http_status(:bad_request)
-          expect(json_response.dig('error')).to eq("upcoming_reconciliations[namespace_id] is empty")
+          expect(json_response.dig('error')).to eq('upcoming_reconciliations[namespace_id] is empty')
         end
       end
 
-      context "when update service failed" do
-        let(:error_message) { "update_service_error" }
+      context 'when update service failed' do
+        let(:error_message) { 'update_service_error' }
 
         before do
           allow_next_instance_of(::UpcomingReconciliations::UpdateService) do |service|
@@ -69,7 +69,7 @@ RSpec.describe API::Internal::UpcomingReconciliations, :api do
           end
         end
 
-        it "returns error", :aggregate_failures do
+        it 'returns error', :aggregate_failures do
           put_upcoming_reconciliations
 
           expect(response).to have_gitlab_http_status(:bad_request)
@@ -78,14 +78,14 @@ RSpec.describe API::Internal::UpcomingReconciliations, :api do
       end
     end
 
-    context "when not gitlab.com", :aggregate_failures do
-      it "returns 403 error" do
+    context 'when not gitlab.com', :aggregate_failures do
+      it 'returns 403 error' do
         allow(::Gitlab).to receive(:com?).and_return(false)
 
-        put api("/internal/upcoming_reconciliations")
+        put api('/internal/upcoming_reconciliations')
 
         expect(response).to have_gitlab_http_status(:forbidden)
-        expect(json_response.dig('message')).to eq("403 Forbidden - This API is gitlab.com only!")
+        expect(json_response.dig('message')).to eq('403 Forbidden - This API is gitlab.com only!')
       end
     end
   end

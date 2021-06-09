@@ -48,7 +48,7 @@ RSpec.describe UpcomingReconciliations::UpdateService do
       end
     end
 
-    shared_examples "returns success" do
+    shared_examples 'returns success' do
       it do
         result = service.execute
 
@@ -70,12 +70,12 @@ RSpec.describe UpcomingReconciliations::UpdateService do
     end
 
     shared_examples 'updates existing upcoming reconciliation' do
-      it "does not increase upcoming_reconciliations count" do
+      it 'does not increase upcoming_reconciliations count' do
         expect { service.execute }
           .not_to change { GitlabSubscriptions::UpcomingReconciliation.count }
       end
 
-      it "updated upcoming_reconciliation matches given hash" do
+      it 'updated upcoming_reconciliation matches given hash' do
         service.execute
 
         expect_equal(
@@ -84,7 +84,7 @@ RSpec.describe UpcomingReconciliations::UpdateService do
       end
     end
 
-    context "when upcoming_reconciliation does not exist for given namespace" do
+    context 'when upcoming_reconciliation does not exist for given namespace' do
       let(:upcoming_reconciliations) { [record_to_create] }
 
       it_behaves_like 'creates new upcoming reconciliation'
@@ -92,7 +92,7 @@ RSpec.describe UpcomingReconciliations::UpdateService do
       it_behaves_like 'returns success'
 
       context 'unsuccessfully creating the record' do
-        let(:error) { "create_upcoming_reconciliation_error" }
+        let(:error) { 'create_upcoming_reconciliation_error' }
 
         before do
           expect_next_instance_of(GitlabSubscriptions::UpcomingReconciliation) do |instance|
@@ -106,7 +106,7 @@ RSpec.describe UpcomingReconciliations::UpdateService do
       end
     end
 
-    context "when upcoming_reconciliation exists for given namespace" do
+    context 'when upcoming_reconciliation exists for given namespace' do
       let(:upcoming_reconciliations) { [record_to_update] }
 
       it_behaves_like 'updates existing upcoming reconciliation'
@@ -114,7 +114,7 @@ RSpec.describe UpcomingReconciliations::UpdateService do
       it_behaves_like 'returns success'
 
       context 'unsuccessfully updating the record' do
-        let(:error) { "update_upcoming_reconciliation_error" }
+        let(:error) { 'update_upcoming_reconciliation_error' }
 
         before do
           existing_record = double
