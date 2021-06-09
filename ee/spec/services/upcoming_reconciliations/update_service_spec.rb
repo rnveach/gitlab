@@ -100,7 +100,7 @@ RSpec.describe UpcomingReconciliations::UpdateService do
           end
         end
 
-        it_behaves_like 'returns an error for the namespace', check_error_message: true do
+        it_behaves_like 'returns an error for the namespace' do
           let(:namespace_id) { record_to_create[:namespace_id] }
         end
       end
@@ -124,7 +124,7 @@ RSpec.describe UpcomingReconciliations::UpdateService do
           expect(existing_record).to receive(:update!).and_raise(StandardError, error)
         end
 
-        it_behaves_like 'returns an error for the namespace', check_error_message: true do
+        it_behaves_like 'returns an error for the namespace' do
           let(:namespace_id) { record_to_update[:namespace_id] }
         end
       end
