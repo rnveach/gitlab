@@ -39,6 +39,10 @@ RSpec.describe API::Internal::UpcomingReconciliations, :api do
         put api("/internal/upcoming_reconciliations", admin), params: { upcoming_reconciliations: upcoming_reconciliations }
       end
 
+      before do
+        allow(::Gitlab).to receive(:com?).and_return(true)
+      end
+
       it "returns success" do
         put_upcoming_reconciliations
 
@@ -71,6 +75,14 @@ RSpec.describe API::Internal::UpcomingReconciliations, :api do
           expect(response).to have_gitlab_http_status(:bad_request)
           expect(json_response.dig('message', 'error')).to eq(error_message)
         end
+      end
+
+      it 'returns 404 error when not gitlab.com' do
+        allow(::Gitlab).to receive(:com?).and_return(false)
+
+        put_upcoming_reconciliations
+
+        expect(response).to have_gitlab_http_status(:not_found)
       end
     end
   end
