@@ -4,6 +4,10 @@ require 'spec_helper'
 
 RSpec.describe API::Internal::UpcomingReconciliations, :api do
   describe "PUT /internal/upcoming_reconciliations" do
+    before do
+      allow(::Gitlab).to receive(:com?).and_return(true)
+    end
+
     context "when unauthenticated" do
       it "returns authentication error" do
         put api("/internal/upcoming_reconciliations")
@@ -39,10 +43,6 @@ RSpec.describe API::Internal::UpcomingReconciliations, :api do
         put api("/internal/upcoming_reconciliations", admin), params: { upcoming_reconciliations: upcoming_reconciliations }
       end
 
-      before do
-        allow(::Gitlab).to receive(:com?).and_return(true)
-      end
-
       it "returns success" do
         put_upcoming_reconciliations
 
@@ -76,13 +76,16 @@ RSpec.describe API::Internal::UpcomingReconciliations, :api do
           expect(json_response.dig('message', 'error')).to eq(error_message)
         end
       end
+    end
 
-      it 'returns 404 error when not gitlab.com' do
+    context "when not gitlab.com", :aggregate_failures do
+      it "returns 403 error" do
         allow(::Gitlab).to receive(:com?).and_return(false)
 
-        put_upcoming_reconciliations
+        put api("/internal/upcoming_reconciliations")
 
-        expect(response).to have_gitlab_http_status(:not_found)
+        expect(response).to have_gitlab_http_status(:forbidden)
+        expect(json_response.dig('message')).to eq("403 Forbidden - This API is gitlab.com only!")
       end
     end
   end

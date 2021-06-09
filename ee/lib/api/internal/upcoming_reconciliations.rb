@@ -3,7 +3,10 @@
 module API
   module Internal
     class UpcomingReconciliations < ::API::Base
-      before { authenticated_as_admin! }
+      before do
+        forbidden!('This API is gitlab.com only!') unless ::Gitlab.com?
+        authenticated_as_admin!
+      end
 
       feature_category :purchase
 
@@ -18,8 +21,6 @@ module API
             end
           end
           put '/' do
-            render_api_error!({ error: 'This API is gitlab.com only!' }, 404) unless ::Gitlab.com?
-
             service = ::UpcomingReconciliations::UpdateService.new(params['upcoming_reconciliations'])
             response = service.execute
 
