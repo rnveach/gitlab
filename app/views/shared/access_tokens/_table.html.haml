@@ -5,9 +5,9 @@
 
 %h5
   = _('Active %{type} (%{token_length})') % { type: type_plural, token_length: active_tokens.length }
-- unless expiration_enforced?
+- unless personal_access_token_experiration_enforced?
   %p.profile-settings-content
-    = _("Personal access tokens are not revoked upon expiration.")
+    = s_("AccessTokens|Personal access tokens are not revoked upon expiration.")
 - if impersonation
   %p.profile-settings-content
     = _("To see all the user's personal access tokens you must impersonate them first.")
@@ -46,7 +46,7 @@
                     = _('In %{time_to_now}') % { time_to_now: distance_of_time_in_words_to_now(token.expires_at) }
               - else
                 %span.token-never-expires-label= _('Never')
-            %td= link_to _('Revoke'), revoke_route_helper.call(token), method: :put, class: [('gl-button btn btn-danger btn-sm float-right qa-revoke-button'), ('btn-danger-secondary' unless token.expires? )], data: { confirm: _('Are you sure you want to revoke this %{type}? This action cannot be undone.') % { type: type } }
+            %td= link_to _('Revoke'), revoke_route_helper.call(token), method: :put, class: "gl-button btn btn-danger btn-sm float-right qa-revoke-button #{'btn-danger-secondary' unless token.expires?}", data: { confirm: _('Are you sure you want to revoke this %{type}? This action cannot be undone.') % { type: type } }
 - else
   .settings-message.text-center
     = no_active_tokens_message
